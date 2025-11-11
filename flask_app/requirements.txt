@@ -1,0 +1,22 @@
+# Flask web framework
+Flask>=3.0.0
+flask-cors>=4.0.0
+
+# Database
+mysql-connector-python>=8.2.0
+
+# Authentication
+bcrypt>=4.1.0
+PyJWT>=2.8.0
+
+# HTTP requests
+requests>=2.31.0
+
+# Image processing (use prebuilt wheel)
+Pillow>=10.0.0
+
+# Environment variables
+python-dotenv>=1.0.0
+
+# File utilities (included with Flask)
+Werkzeug>=3.0.0

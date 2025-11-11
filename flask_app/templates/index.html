@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" href="{{ url_for('static', filename='assets/image.png') }}" type="image/png" />
+  <title>AI Image Detection System</title>
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">AI Image Detection System</a>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="#home" class="nav-link active" data-page="home">AI Detection</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#scam-tips" class="nav-link" data-page="scam-tips">Parcel Scam Tips</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#scam-cases" class="nav-link" data-page="scam-cases">Malaysia Scam Cases</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#user-manual" class="nav-link" data-page="user-manual">User Manual</a>
+                </li>
+                <li class="nav-item" id="admin-panel-link" style="display:none;">
+                    <a href="#admin" class="nav-link" data-page="admin">Admin Panel</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="login-link" class="nav-link" data-page="login">Login</a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" id="register-link" class="nav-link" data-page="register">Create Account</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container">
+        <!-- Home Page (AI Detection) -->
+        <div id="home" class="page active">
+            <h1>🔍 AI Image Detection</h1>
+            <p style="text-align: center; color: #aaa; margin-bottom: 30px;">
+                Detect if an image is AI-generated (Midjourney, DALL-E, Stable Diffusion, Flux, Grok)
+            </p>
+            
+            <!-- Quick Stats/Info Banner -->
+            <div style="max-width: 800px; margin: 0 auto 30px auto; padding: 20px; background: linear-gradient(135deg, #1a73e8 0%, #0d47a1 100%); border-radius: 12px; text-align: center;">
+                <h3 style="color: #fff; margin-bottom: 10px; font-size: 20px;">🎯 Powered by Advanced AI Detection</h3>
+                <p style="color: #e3f2fd; margin: 0; font-size: 14px;">Upload any image to analyze and get instant results with confidence scores</p>
+            </div>
+            
+            <!-- Upload box -->
+            <div id="upload-area">
+                <label for="upload-input" class="upload-label">
+                    <i class="fa fa-upload"></i> Upload an image to analyze
+                </label>
+                <input type="file" id="upload-input" accept="image/*" hidden>
+                <div id="preview"></div>
+            </div>
+
+            <!-- Detection button -->
+            <div style="text-align: center; margin: 30px 0;">
+                <button id="detect-btn" style="display: none; padding: 15px 40px; background: #3f3e3e; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 18px;">
+                    🚀 Detect AI Generation
+                </button>
+            </div>
+
+            <!-- Results area -->
+            <div id="detection-result"></div>
+            
+            <!-- Detection info -->
+            <div style="max-width: 800px; margin: 40px auto; padding: 20px; background: #2b2b2b; border-radius: 8px;">
+                <h3 style="color: #1a73e8; margin-bottom: 15px;">ℹ️ How It Works</h3>
+                <p style="color: #ddd; line-height: 1.6;">
+                    Our AI detection system analyzes images for signs of AI generation from tools like:
+                </p>
+                <ul style="color: #ddd; margin: 15px 0; padding-left: 30px;">
+                    <li>Midjourney</li>
+                    <li>DALL-E</li>
+                    <li>Stable Diffusion</li>
+                    <li>Flux</li>
+                    <li>Grok</li>
+                </ul>
+                <p style="color: #ddd; line-height: 1.6;">
+                    <strong>What we check:</strong><br>
+                    • Unnatural smoothness and texture patterns<br>
+                    • Anatomical inconsistencies (hands, eyes, teeth)<br>
+                    • Lighting/shadow anomalies<br>
+                    • Symmetric asymmetries<br>
+                    • Noise patterns typical of diffusion models
+                </p>
+            </div>
+        </div>
+
+        <!-- Login Page -->
+        <div id="login" class="page">
+            <div class="page-content">
+                <h2>Login</h2>
+                <form id="login-form">
+                    <div style="margin-bottom: 15px;">
+                        <label for="login-username" style="display: block; margin-bottom: 5px; color: #fff;">Username:</label>
+                        <input type="text" id="login-username" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: #fff;">
+                    </div>
+                    <div style="margin-bottom: 15px;">
+                        <label for="login-password" style="display: block; margin-bottom: 5px; color: #fff;">Password:</label>
+                        <input type="password" id="login-password" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: #fff;">
+                    </div>
+                    <button type="submit" style="width: 100%; padding: 12px; background: #3f3e3e; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Login</button>
+                </form>
+                <div id="login-message" style="margin-top: 15px; text-align: center; color: #ff6b6b;"></div>
+            </div>
+        </div>
+
+        <!-- Register Page -->
+        <div id="register" class="page">
+            <div class="page-content">
+                <h2>Create Account</h2>
+                <form id="register-form">
+                    <div style="margin-bottom: 15px;">
+                        <label for="reg-username" style="display: block; margin-bottom: 5px; color: #fff;">Username:</label>
+                        <input type="text" id="reg-username" required
+                            style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: #fff;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="reg-password" style="display: block; margin-bottom: 5px; color: #fff;">Password:</label>
+                        <input type="password" id="reg-password" required
+                            style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: #fff;">
+                    </div>
+
+                    <div style="margin-bottom: 15px;">
+                        <label for="reg-admin-secret" style="display: block; margin-bottom: 5px; color: #fff;">Admin Secret (optional):</label>
+                        <input type="password" id="reg-admin-secret"
+                            style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #555; background: #333; color: #fff;">
+                        <small style="color: #aaa;">Leave blank for normal user. Provide admin secret to create admin account.</small>
+                    </div>
+
+                    <button type="submit"
+                        style="width: 100%; padding: 12px; background: #3f3e3e; color: #fff; border: none; border-radius: 4px; cursor: pointer;">Create
+                        Account</button>
+                </form>
+                <div id="register-message" style="margin-top: 15px; text-align: center; color: #ff6b6b;"></div>
+            </div>
+        </div>
+
+        <!-- Admin Panel Page -->
+        <div id="admin" class="page">
+            <div class="page-content">
+                <h2>🔐 Admin Panel</h2>
+                
+                <!-- Upload Section -->
+                <div id="upload-section" style="margin-top:30px; background: linear-gradient(135deg, #2b2b2b 0%, #353535 100%); padding: 30px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <h3 style="color:#4dabf7; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa fa-upload"></i> Upload New Content
+                    </h3>
+                    <form id="admin-upload-form" enctype="multipart/form-data">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #d0d0d0; font-weight: 500; margin-bottom: 8px;">
+                                <i class="fa fa-list"></i> Content Type
+                            </label>
+                            <select id="upload-resource-select" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: linear-gradient(135deg, #2b2b2b 0%, #353535 100%); color: #fff; font-size: 15px;">
+                                <option value="user-manual">📄 User Manual (PDF)</option>
+                                <option value="scam-tips">⚠️ Scam Tip (Image/Poster)</option>
+                                <option value="scam-cases">🚨 Malaysia Scam Case (Image)</option>
+                            </select>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #d0d0d0; font-weight: 500; margin-bottom: 8px;">
+                                <i class="fa fa-heading"></i> Title / Headline
+                            </label>
+                            <input type="text" id="upload-title" placeholder="Enter title or headline" required>
+                        </div>
+                        
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; color: #d0d0d0; font-weight: 500; margin-bottom: 8px;">
+                                <i class="fa fa-file"></i> Upload File
+                            </label>
+                            <input type="file" id="upload-file" required style="width: 100%; padding: 12px; background: linear-gradient(135deg, #2b2b2b 0%, #353535 100%); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 10px; color: #fff;">
+                        </div>
+                        
+                        <div id="news-link-section" style="margin-bottom: 20px; display: none;">
+                            <label style="display: block; color: #d0d0d0; font-weight: 500; margin-bottom: 8px;">
+                                <i class="fa fa-link"></i> News Link (Optional)
+                            </label>
+                            <input type="url" id="upload-link" placeholder="https://example.com/news-article">
+                        </div>
+                        
+                        <button type="submit" class="btn-primary" style="width: 100%; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                            <i class="fa fa-cloud-upload"></i> Upload Content
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Manage Section -->
+                <div style="margin-top: 40px; background: linear-gradient(135deg, #2b2b2b 0%, #353535 100%); padding: 30px; border-radius: 14px; border: 1px solid rgba(255, 255, 255, 0.08);">
+                    <h3 style="color:#4dabf7; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                        <i class="fa fa-list-check"></i> Manage Existing Content
+                    </h3>
+                    
+                    <div style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+                        <div style="flex: 1;">
+                            <label style="display: block; color: #d0d0d0; font-weight: 500; margin-bottom: 8px;">
+                                Select Content Type
+                            </label>
+                            <select id="resource-select" style="width: 100%; padding: 14px 16px; border-radius: 10px; border: 2px solid rgba(255, 255, 255, 0.1); background: linear-gradient(135deg, #2b2b2b 0%, #353535 100%); color: #fff; font-size: 15px;">
+                                <option value="user-manual">📄 User Manuals</option>
+                                <option value="scam-tips">⚠️ Scam Tips</option>
+                                <option value="scam-cases">🚨 Scam Cases</option>
+                            </select>
+                        </div>
+                        <div style="padding-top: 32px;">
+                            <button id="load-items" class="btn-primary" style="width: auto; padding: 14px 30px; display: flex; align-items: center; gap: 8px;">
+                                <i class="fa fa-refresh"></i> Load Items
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div id="admin-msg"></div>
+                    <div id="admin-items"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Parcel Scam Tips Page -->
+        <div id="scam-tips" class="page">
+            <div class="page-content">
+                <h2>Parcel Scam Tips</h2>
+                <div id="scam-tips-list"></div>
+            </div>
+        </div>
+
+        <!-- Malaysia Scam Cases Page -->
+        <div id="scam-cases" class="page">
+            <div class="page-content">
+                <h2>Malaysia Parcel Scam Cases</h2>
+                <div id="scam-cases-list"></div>
+            </div>
+        </div>
+
+        <!-- User Manual Page -->
+        <div id="user-manual" class="page">
+            <div class="page-content">
+                <h2>User Manual</h2>
+                <div id="user-manual-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>
