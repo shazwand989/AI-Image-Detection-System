@@ -5,6 +5,7 @@ import json
 from PIL import Image
 import os
 from dotenv import load_dotenv
+from datetime import datetime
 
 # Load environment variables
 load_dotenv()
@@ -13,6 +14,40 @@ load_dotenv()
 API_URL = "https://api.sightengine.com/1.0/check.json"
 API_USER = os.getenv("SIGHTENGINE_API_USER", "")
 API_SECRET = os.getenv("SIGHTENGINE_API_SECRET", "")
+
+# Create directories for saving images and results
+UPLOAD_DIR = "uploaded_images"
+RESULTS_DIR = "analysis_results"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+os.makedirs(RESULTS_DIR, exist_ok=True)
+
+# Function to save image and results
+def save_image_and_results(image, image_name, analysis_result):
+    """Save uploaded image and analysis results with timestamp"""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    base_name = os.path.splitext(image_name)[0]
+    
+    # Save image
+    image_filename = f"{timestamp}_{base_name}.png"
+    image_path = os.path.join(UPLOAD_DIR, image_filename)
+    image.save(image_path)
+    
+    # Save JSON result
+    json_filename = f"{timestamp}_{base_name}.json"
+    json_path = os.path.join(RESULTS_DIR, json_filename)
+    
+    # Add metadata to result
+    result_with_metadata = {
+        "timestamp": timestamp,
+        "original_filename": image_name,
+        "saved_image_path": image_path,
+        **analysis_result
+    }
+    
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(result_with_metadata, f, indent=2)
+    
+    return image_path, json_path
 
 # Page configuration
 st.set_page_config(
@@ -222,6 +257,20 @@ if uploaded_file is not None:
                                 file_name="ai_detection_result.json",
                                 mime="application/json"
                             )
+                        
+                        # Save image and results
+                        try:
+                            saved_image_path, saved_json_path = save_image_and_results(
+                                image, 
+                                uploaded_file.name, 
+                                json_output
+                            )
+                            st.success(f"✅ Image and results saved successfully!")
+                            with st.expander("💾 Saved Files"):
+                                st.write(f"**Image:** `{saved_image_path}`")
+                                st.write(f"**JSON:** `{saved_json_path}`")
+                        except Exception as save_error:
+                            st.warning(f"⚠️ Could not save files: {str(save_error)}")
                     
                     elif result.get("status") == "failure":
                         error_code = result.get("error", {}).get("code", "unknown")
@@ -240,6 +289,63 @@ if uploaded_file is not None:
                 except Exception as e:
                     st.error(f"❌ Error: {str(e)}")
                     st.exception(e)
+
+# Analysis History Section
+st.markdown("---")
+st.subheader("📚 Analysis History")
+
+# Get all saved results
+if os.path.exists(RESULTS_DIR):
+    json_files = sorted([f for f in os.listdir(RESULTS_DIR) if f.endswith('.json')], reverse=True)
+    
+    if json_files:
+        st.write(f"**Total Analyses:** {len(json_files)}")
+        
+        with st.expander(f"📂 View History ({len(json_files)} records)"):
+            # Limit display to last 10 results
+            for json_file in json_files[:10]:
+                json_path = os.path.join(RESULTS_DIR, json_file)
+                
+                try:
+                    with open(json_path, 'r', encoding='utf-8') as f:
+                        result_data = json.load(f)
+                    
+                    # Create columns for history display
+                    hist_col1, hist_col2 = st.columns([1, 2])
+                    
+                    with hist_col1:
+                        # Display saved image if exists
+                        image_path = result_data.get('saved_image_path', '')
+                        if os.path.exists(image_path):
+                            saved_img = Image.open(image_path)
+                            st.image(saved_img, width=150)
+                    
+                    with hist_col2:
+                        st.write(f"**File:** {result_data.get('original_filename', 'Unknown')}")
+                        st.write(f"**Time:** {result_data.get('timestamp', 'Unknown')}")
+                        st.write(f"**Result:** {'🤖 AI-Generated' if result_data.get('is_ai_generated') else '✅ Likely Real'}")
+                        st.write(f"**Confidence:** {result_data.get('confidence_percent', 0):.1f}%")
+                        
+                        # Download button for this result
+                        st.download_button(
+                            label="📥 Download JSON",
+                            data=json.dumps(result_data, indent=2),
+                            file_name=json_file,
+                            mime="application/json",
+                            key=f"download_{json_file}"
+                        )
+                    
+                    st.markdown("---")
+                    
+                except Exception as e:
+                    st.error(f"Error loading {json_file}: {str(e)}")
+            
+            if len(json_files) > 10:
+                st.info(f"Showing last 10 results. Total records: {len(json_files)}")
+    else:
+        st.info("No analysis history yet. Upload and analyze an image to get started!")
+else:
+    st.info("No analysis history yet. Upload and analyze an image to get started!")
 
 # Footer
 st.markdown("---")
